@@ -1,0 +1,12 @@
+LocalBuffer high level idea:
+Phase-1
+    1) File read from client and write to server (Done)
+    2) Read the fileName and write to server with the same fileName
+    3) Read from server and write to Client with the same fileName
+    4) Decide who has the latest file in the network and update the outdated peer on the network.
+    5) Instead for client/server implement a common n/w connection handler.
+
+Phase-2
+    1) Peers registration contract.
+    2) Auto detection of the registered peers.
+    3) Scale to handle multiple peers and Algo/Contract for multiple auto sync b/w multiple peers.
