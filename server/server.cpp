@@ -1,46 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <arpa/inet.h>
-#include <string>
+#include <string.h>
 #include <unistd.h>
-
-#define SIZE 1024
+#include "contracts/FileMetaData.hpp"
+#include <string>
+#include <map>
 
 using namespace std;
-	
+
 void handleNewConnection(int sockfd)
 {
 	int n;
 	FILE *fp;
-	string filename = "recv.txt";
-	char buffer[SIZE];
+	int bufferSize = sizeof(struct FileMetaData);
+	struct FileMetaData fileMetaData;
+	map<string, FILE*> fileMap;
 	
-	fp = fopen(filename.c_str(), "w");
 	while (1)
 	{
-		n = recv(sockfd, buffer, SIZE, 0);
+		n = recv(sockfd, &fileMetaData, bufferSize, 0);
 		if (n <= 0)
 		{
-		break;
-		return;
+			break;
 		}
-		fprintf(fp, "%s", buffer);
-		bzero(buffer, SIZE);
+		
+		printf("[+]Received file name: %s\n", fileMetaData.fileName);
+		printf("[+]Received file type: %s\n", fileMetaData.fileType);
+		printf("[+]Received file content: %s\n", fileMetaData.content);
+		
+		if (fileMap.find(fileMetaData.fileName) != fileMap.end())
+		{
+			fp = fileMap[fileMetaData.fileName];
+		}
+		else
+		{
+			fp = fopen(fileMetaData.fileName, "w");
+			if (fp == NULL)
+			{
+				perror("[-]Error in opening file.");
+				exit(1);
+			}
+			fileMap[fileMetaData.fileName] = fp;
+		}
+
+		fprintf(fp, "%s", fileMetaData.content);
+		bzero(&fileMetaData, bufferSize);
 	}
+
+	// Close all opened files
+	for (auto const& pair : fileMap)
+	{
+		fclose(pair.second);
+	}
+
 	return;
 }
 	
 int main()
 {
-	string ip = "172.17.0.2";
+	char ip[] = "172.17.0.2";
 	int port = 8081;
 	int e;
 	
 	int sockfd, new_sock;
 	struct sockaddr_in server_addr, new_addr;
 	socklen_t addr_size;
-	char buffer[SIZE];
 	
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0)
@@ -52,7 +77,7 @@ int main()
 	
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(port);
-	server_addr.sin_addr.s_addr = inet_addr(ip.c_str());
+	server_addr.sin_addr.s_addr = inet_addr(ip);
 	
 	e = bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 	if (e < 0)
