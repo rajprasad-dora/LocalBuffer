@@ -37,9 +37,10 @@ int main(int argc, char* argv[])
 	if (isMaster)
 	{
 		handler.StartServer();
+	
 		int tmp;
-		cout << "Press any key to stop the server and close connections..." << endl;
-		cin >> tmp;
+		cout << "Press any key to stop the server/client and close connections..." << endl;
+		cin >> tmp;	
 	}
 	else
 	{
@@ -50,7 +51,6 @@ int main(int argc, char* argv[])
 			fileOps->SendFile(sockfd, "/app/filesToShare/file1.txt");
 		}
 	}
-	
 	handler.StopServer();
 	// fileOps.StopReceivingFiles();
 	

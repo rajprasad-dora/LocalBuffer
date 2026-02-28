@@ -1,3 +1,9 @@
 *.out
+*.exe
+*.elf
+*.bin
+*.run
 *.txt
 sshkeys/*
+
+server/server

@@ -127,7 +127,7 @@ public:
     
     void MakeConnectionWithMaster(std::string master_ip)
     {
-        if (isServerModeOn || isServerRunning)
+        if (this->isServerModeOn || this->isServerRunning)
         {
             printf("[-] Host is the current master. Cannot start a client mode.\n");
             return;
@@ -145,7 +145,7 @@ public:
     {
         printf("[+]Stopping server and closing connections.\n");
     
-        isServerRunning = false;
+        this->isServerRunning = false;
         shutdown(this->sockfd, SHUT_RDWR); // Unblocks accept()
         close(this->sockfd); // Close before join
 

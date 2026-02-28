@@ -5,12 +5,9 @@
 
 class FileManager
 {
-    int sockfd;
-
     public:
-    FileManager(int sockfd)
+    FileManager()
     {
-        this->sockfd = sockfd;
     }
 
     bool TryToAcquireLockForPeer(const std::string& filePath)
