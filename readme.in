@@ -2,7 +2,7 @@ LocalBuffer high level idea:
 Phase-1
     1) File read from client and write to server (Done)
     2) Read the fileName and write to server with the same fileName (Done)
-    3) Read from server and write to Client with the same fileName
+    3) Read from server and write to Client with the same fileName (Done)
     4) Decide who has the latest file in the network and update the outdated peer on the network.
     5) Instead for client/server implement a common n/w connection handler.
 
@@ -10,3 +10,15 @@ Phase-2
     1) Peers registration contract.
     2) Auto detection of the registered peers in the n/w.
     3) Scale to handle multiple peers and Algo/Contract for multiple auto sync b/w multiple peers.
+
+
+Major components:
+FileChangeDetector:
+    1) Detect if there is any change to the file. Intercept the write operation of the file.
+    2) Try to get a lock on the file in the LocalBuffer network.
+        a) Send a request to Master to get the lock.
+            i) Master needs to gaurantee that the file for which lock is being requested is in sync state in the n/w.
+        b) Master will confirm that noone else has the lock already and provide the lock.
+    3) Once the file is closed by the peer having the lock. This component needs to send the content of the file to the master.
+    4) Then peer will inform the master to release the lock.
+    
